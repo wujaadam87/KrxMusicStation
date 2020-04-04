@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/KrxMusicStation/appsettings.Development.json
+/KrxMusicStation/appsettings.json
+/KrxMusicStation.Data/MyMusic72.db
