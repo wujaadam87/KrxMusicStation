@@ -1,0 +1,107 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Songs";
+
+    var prevDisabled = !Model.Songs.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Songs.HasNextPage ? "disabled" : "";
+}
+
+<h2>Songs</h2>
+
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="./Index">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Songs.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a>
+    @Model.Songs.FirstShown to @Model.Songs.LastShown of @Model.Songs.Total
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Songs.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@Model.ArtistSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    Artist
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@Model.SongSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    Song
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@Model.AlbumSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    Album
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@Model.DurationSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    Duration
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Songs)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(songInfo => item.StrArtistDisp)
+                </td>
+                <td>
+                    @Html.DisplayFor(songInfo => item.StrTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(songInfo => Model.Albums.First(a => a.IdAlbum == item.IdAlbum).StrAlbum)
+                </td>
+                <th>
+                    @Html.DisplayFor(songInfo => item.IDuration)
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Songs.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a>
+    @Model.Songs.FirstShown to @Model.Songs.LastShown of @Model.Songs.Total
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Songs.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
