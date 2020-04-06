@@ -1,7 +1,9 @@
 ﻿using KrxMusicStation.Data;
 using KrxMusicStation.KrxMusicStation.Data;
+using KrxMusicStation.Logic;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,11 +11,14 @@ namespace KrxMusicStation.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly KrxMusicStationDBContext _context;
+        private readonly KrxMusicStationDBContext context;
+        private readonly IPlaylistService playlistService;
 
-        public IndexModel(KrxMusicStationDBContext context)
+        public IndexModel(KrxMusicStationDBContext context,
+                            IPlaylistService playlistService)
         {
-            _context = context;
+            this.context = context;
+            this.playlistService = playlistService;
         }
 
         public PaginatedList<Song> Songs { get; set; }
@@ -30,6 +35,22 @@ namespace KrxMusicStation.Pages
         public async Task OnGetAsync(string sortOrder,
             string currentFilter, string searchString, int? pageIndex)
         {
+            await InitializePageWith(sortOrder, currentFilter, searchString, pageIndex);
+        }
+
+        public async Task OnPostAsync(string sortOrder,
+            string currentFilter, string searchString, int? pageIndex, string playListName)
+        {
+            await InitializePageWith(sortOrder, currentFilter, searchString, pageIndex);
+
+            playlistService.SavePlaylist(playListName, Songs, out string message);
+
+            RedirectToPage("./Index");
+        }
+
+        private async Task InitializePageWith(string sortOrder,
+            string currentFilter, string searchString, int? pageIndex)
+        {
             SongSort = sortOrder == "Song" ? "song_desc" : "Song";
             AlbumSort = sortOrder == "Album" ? "album_desc" : "Album";
             ArtistSort = sortOrder == "Artist" ? "artist_desc" : "Artist";
@@ -42,15 +63,15 @@ namespace KrxMusicStation.Pages
 
             CurrentFilter = searchString;
 
-            Albums = from a in _context.Albums select a;
-            var songs = from s in _context.Songs select s;
+            Albums = from a in context.Albums select a;
+            var songs = from s in context.Songs select s;
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 var bySongOrArtist = songs.Where(s => s.StrArtistDisp.ToUpper().Contains(searchString.ToUpper())
                                        || s.StrTitle.ToUpper().Contains(searchString.ToUpper()));
-                var byAlbum = from s in _context.Songs
-                              join a in _context.Albums on s.IdAlbum equals a.IdAlbum
+                var byAlbum = from s in context.Songs
+                              join a in context.Albums on s.IdAlbum equals a.IdAlbum
                               where a.StrAlbum.ToUpper() == searchString.ToUpper()
                               || a.StrArtistDisp.ToUpper() == searchString.ToUpper()
                               select s;
@@ -72,14 +93,14 @@ namespace KrxMusicStation.Pages
                     songs = songs.OrderByDescending(s => s.StrArtistDisp);
                     break;
                 case "Album":
-                    songs = from s in _context.Songs
-                            join a in _context.Albums on s.IdAlbum equals a.IdAlbum
+                    songs = from s in context.Songs
+                            join a in context.Albums on s.IdAlbum equals a.IdAlbum
                             orderby a.StrAlbum
                             select s;
                     break;
                 case "album_desc":
-                    songs = from s in _context.Songs
-                            join a in _context.Albums on s.IdAlbum equals a.IdAlbum
+                    songs = from s in context.Songs
+                            join a in context.Albums on s.IdAlbum equals a.IdAlbum
                             orderby a.StrAlbum descending
                             select s;
                     break;
