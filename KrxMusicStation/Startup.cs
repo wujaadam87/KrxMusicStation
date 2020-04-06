@@ -1,5 +1,5 @@
-using KrxMusicStation.Data;
 using KrxMusicStation.KrxMusicStation.Data;
+using KrxMusicStation.Logic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ namespace KrxMusicStation
                 options.UseSqlite(Configuration.GetConnectionString("KodiDevDB"));
             });
 
-            services.AddScoped<ISongData, KodiSqliteData>();
+            services.AddScoped<IPlaylistService, PlaylistAccess>();
 
             services.AddRazorPages();
         }

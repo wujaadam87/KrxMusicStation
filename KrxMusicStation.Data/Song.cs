@@ -1,4 +1,6 @@
-﻿namespace KrxMusicStation.Data
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace KrxMusicStation.Data
 {
     public partial class Song
     {
