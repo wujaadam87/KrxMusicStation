@@ -29,7 +29,7 @@ namespace KrxMusicStation.Areas.Identity.Pages.Account
 
         public IActionResult OnGet(string email)
         {
-            return Page();
+            return RedirectToPage("Login");
         }
     }
 }
