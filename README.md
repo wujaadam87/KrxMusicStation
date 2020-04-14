@@ -32,7 +32,7 @@ Otherwise Yamaha device is not able to playback single tracks from the one-file-
 - create a simple search page (search by any of: path, file name, artist, song, album)
 - deploy the app on laptop and test
 
-2. As a user I want the app to startup automatically when I launch my laptop
+2. [DONE] As a user I want the app to startup automatically when I launch my laptop
 - deploy an autorun of the app
 
 3. [DONE] As a user I want to navigate the search results list in ranges, only the visible range is then saved as playlist
@@ -57,3 +57,5 @@ Otherwise Yamaha device is not able to playback single tracks from the one-file-
 11. As a user I want to be able to remove tracks from edited playlist
 
 12. As a user I want to manually change order of songs on edited playlist
+
+13. As a user I want to shut down the laptop remotely from the web app
