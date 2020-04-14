@@ -1,7 +1,10 @@
+using KrxMusicStation.Data;
 using KrxMusicStation.KrxMusicStation.Data;
 using KrxMusicStation.Logic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,13 +25,24 @@ namespace KrxMusicStation
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<KrxMusicStationDBContext>(options =>
-            {
-                options.UseSqlite(Configuration.GetConnectionString("KodiDevDB"));
-            });
+                options.UseSqlite(Configuration.GetConnectionString("KodiDevDb")));
+            services.AddDbContext<UsersDbContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("UsersDb")));
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<UsersDbContext>();
 
             services.AddScoped<IPlaylistService, PlaylistAccess>();
 
-            services.AddRazorPages();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            services.AddRazorPages()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizePage("/Index");
+                    options.Conventions.AllowAnonymousToPage("/Account/Login");
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +64,7 @@ namespace KrxMusicStation
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
