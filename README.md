@@ -26,7 +26,7 @@ Otherwise Yamaha device is not able to playback single tracks from the one-file-
 
 ## User stories:
 
-1. As a user I want to search music by text from existing Kodi music library
+1. [DONE] As a user I want to search music by text from existing Kodi music library
 - create simple ASP.NET Core website
 - connect to kodi sqlite music database using EntityFrameworkCore
 - create a simple search page (search by any of: path, file name, artist, song, album)
@@ -35,16 +35,16 @@ Otherwise Yamaha device is not able to playback single tracks from the one-file-
 2. As a user I want the app to startup automatically when I launch my laptop
 - deploy an autorun of the app
 
-3. As a user I want to navigate the search results list in ranges, only the visible range is then saved as playlist
+3. [DONE] As a user I want to navigate the search results list in ranges, only the visible range is then saved as playlist
 
 4. As a user I want the search result list be dynamically updated as I type
 
-5. As a user I want to save the music displayed on the search results list as a default playlist, so I can play it back on Yamaha
+5. [DONE] As a user I want to save the music displayed on the search results list as a default playlist, so I can play it back on Yamaha
 
 6. As a user I want to search music and specify the quality I'm interested in
 - add bitrate table to db
 - add bitrate data using file size and song length
-- at startup scan which songs dont have the bitrate data and add them
+- at startup scan which songs don't have the bitrate data and add them
 
 7. As a user I want to pick songs from the search results list and add them to edited playlist
 
