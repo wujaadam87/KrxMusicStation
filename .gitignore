@@ -342,3 +342,4 @@ healthchecksdb
 /KrxMusicStation/appsettings.json
 /KrxMusicStation.Data/MyMusic72.db
 /KrxMusicStation.Data/UsersDb.db
+/KrxMusicStation/.config/dotnet-tools.json
