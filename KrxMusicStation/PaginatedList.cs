@@ -28,6 +28,14 @@ namespace KrxMusicStation
             this.AddRange(items);
         }
 
+        public string GetPageInfo()
+        {
+            if (Total == 0)
+                return "No results";
+            else
+                return $"{FirstShown} to {LastShown} of {Total}";
+        }
+
         public bool HasPreviousPage
         {
             get
