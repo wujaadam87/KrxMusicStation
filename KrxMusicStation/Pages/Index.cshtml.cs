@@ -72,10 +72,16 @@ namespace KrxMusicStation.Pages
                                        || s.StrTitle.ToUpper().Contains(searchString.ToUpper()));
                 var byAlbum = from s in context.Songs
                               join a in context.Albums on s.IdAlbum equals a.IdAlbum
-                              where a.StrAlbum.ToUpper() == searchString.ToUpper()
-                              || a.StrArtistDisp.ToUpper() == searchString.ToUpper()
+                              where a.StrAlbum.ToUpper().Contains(searchString.ToUpper())
+                              || a.StrArtistDisp.ToUpper().Contains(searchString.ToUpper())
                               select s;
-                songs = byAlbum.Concat(bySongOrArtist).Distinct();
+                var byPath = from s in context.Songs
+                              join p in context.Paths on s.IdPath equals p.IdPath
+                              where p.StrPath.ToUpper().Contains(searchString.ToUpper())
+                              select s;
+                songs = byAlbum.Concat(bySongOrArtist)
+                                .Concat(byPath)
+                                .Distinct();
             }
 
             switch (sortOrder)
