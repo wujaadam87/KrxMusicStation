@@ -59,3 +59,9 @@ Otherwise Yamaha device is not able to playback single tracks from the one-file-
 12. As a user I want to manually change order of songs on edited playlist
 
 13. As a user I want to shut down the laptop remotely from the web app
+
+14. As a user I want to browse the library by folder structure
+
+15. As a user I want to add whole folders or single tracks from a folder to playlist (from the folder view)
+
+16. As a user I want to have the entire app in dark theme
