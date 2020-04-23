@@ -71,6 +71,9 @@ namespace KrxMusicStation
             {
                 endpoints.MapRazorPages();
             });
+
+
+            PlaylistAccess.ClearupTempMusic(Configuration);
         }
     }
 }

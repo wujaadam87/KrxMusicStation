@@ -53,6 +53,43 @@ namespace KrxMusicStation.Logic
             return true;
         }
 
+        public static void ClearupTempMusic(IConfiguration config)
+        {
+            //production env is on linux, dev on windows but without the music library, skip for dev
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return;
+
+            var tempFolder = config["TempMusicFolder"];
+
+            var songsOnPlaylists = new List<string>();
+            var tempSongs = Directory.GetFiles(tempFolder);
+            var playlists = Directory.GetFiles(config["PlayListsFolder"]);
+
+            foreach (var playlist in playlists)
+            {
+                songsOnPlaylists.AddRange(GetSongPathFromPlaylist(playlist));
+            }
+
+            var songsToDelete = songsOnPlaylists.Distinct()
+                                                .Where(p=>p.Contains(tempFolder))                                    
+                                                .Intersect(tempSongs);
+
+            foreach (var toDelete in songsToDelete)
+            {
+                File.Delete(toDelete);
+            }
+        }
+
+        private static IEnumerable<string> GetSongPathFromPlaylist(string playlistPath)
+        {
+            foreach (var line in File.ReadAllLines(playlistPath).Skip(1))
+            {
+                if (!line.Contains("#EXTINF"))
+                    yield return line;
+            }
+            
+        }
+
         private void AppendTrack(string plPath, Song song, out bool extracted)
         {
             string shortenedInfo = GetShortenedInfo(song);
