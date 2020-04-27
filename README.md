@@ -52,7 +52,7 @@ Otherwise Yamaha device is not able to playback single tracks from the one-file-
 
 9. As a user I want to open existing playlist for editing
 
-10. As a user I want to save playlist that include songs from the one-file-per-album files
+10. [DONE] As a user I want to save playlist that include songs from the one-file-per-album files
 
 11. As a user I want to be able to remove tracks from edited playlist
 
