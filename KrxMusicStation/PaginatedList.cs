@@ -21,7 +21,7 @@ namespace KrxMusicStation
 
             Total = count;
             FirstShown = 1 + (pageIndex - 1) * pageSize;
-            LastShown = FirstShown + pageSize;
+            LastShown = FirstShown + pageSize - 1;
             if (LastShown > Total)
                 LastShown = Total;
 

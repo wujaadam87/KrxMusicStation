@@ -4,6 +4,7 @@ using KrxMusicStation.Logic;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -68,20 +69,29 @@ namespace KrxMusicStation.Pages
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                var bySongOrArtist = songs.Where(s => s.StrArtistDisp.ToUpper().Contains(searchString.ToUpper())
-                                       || s.StrTitle.ToUpper().Contains(searchString.ToUpper()));
-                var byAlbum = from s in context.Songs
-                              join a in context.Albums on s.IdAlbum equals a.IdAlbum
-                              where a.StrAlbum.ToUpper().Contains(searchString.ToUpper())
-                              || a.StrArtistDisp.ToUpper().Contains(searchString.ToUpper())
-                              select s;
-                var byPath = from s in context.Songs
-                              join p in context.Paths on s.IdPath equals p.IdPath
-                              where p.StrPath.ToUpper().Contains(searchString.ToUpper())
-                              select s;
-                songs = byAlbum.Concat(bySongOrArtist)
-                                .Concat(byPath)
-                                .Distinct();
+                var words = searchString.Split(" ");
+                var tempSearch = new List<IQueryable<Song>>();
+
+                foreach (var word in words)
+                {
+                    string w = word.Length == 1 ? w = $" {word} " : word;
+                    
+                    var bySongOrArtist = songs.Where(s => s.StrArtistDisp.ToUpper().Contains(w.ToUpper())
+                                       || s.StrTitle.ToUpper().Contains(w.ToUpper()));
+                    var byAlbum = from s in context.Songs
+                                join a in context.Albums on s.IdAlbum equals a.IdAlbum
+                                where a.StrAlbum.ToUpper().Contains(w.ToUpper())
+                                || a.StrArtistDisp.ToUpper().Contains(w.ToUpper())
+                                select s;
+                    var byPath = from s in context.Songs
+                               join p in context.Paths on s.IdPath equals p.IdPath
+                               where p.StrPath.ToUpper().Contains(w.ToUpper())
+                               select s;
+
+                    tempSearch.Add(bySongOrArtist.Concat(byAlbum).Concat(byPath).Distinct());
+                }
+                
+                songs = IntersectAll(tempSearch).Distinct();
             }
 
             switch (sortOrder)
@@ -124,6 +134,21 @@ namespace KrxMusicStation.Pages
             int pageSize = 50;
             Songs = await PaginatedList<Song>.CreateAsync(
                 songs.AsNoTracking(), pageIndex ?? 1, pageSize);
+        }
+
+        private IQueryable<T> IntersectAll<T>(IEnumerable<IQueryable<T>> lists)
+        {
+            var result = lists.First();
+
+            if (lists.Count() > 1)
+            {
+                foreach (var list in lists.Skip(1))
+                {
+                    result = result.Intersect(list);
+                }
+            }
+
+            return result;
         }
     }
 }
