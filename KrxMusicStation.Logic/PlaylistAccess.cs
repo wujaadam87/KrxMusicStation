@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace KrxMusicStation.Logic
 {
@@ -55,6 +54,9 @@ namespace KrxMusicStation.Logic
 
         public static void ClearupTempMusic(IConfiguration config)
         {
+            var logger = new SimpleLogger(config);
+            logger.StartLog();
+            logger.AppendLine("start clearup");
             //production env is on linux, dev on windows but without the music library, skip for dev
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 return;
@@ -65,29 +67,35 @@ namespace KrxMusicStation.Logic
             var tempSongs = Directory.GetFiles(tempFolder);
             var playlists = Directory.GetFiles(config["PlayListsFolder"]);
 
+            logger.AppendLine($"{tempSongs.Count()} tempsongs found");
+            logger.AppendLine($"{playlists.Count()} playlists found");
+
             foreach (var playlist in playlists)
             {
-                songsOnPlaylists.AddRange(GetSongPathFromPlaylist(playlist));
+                var songs = GetSongPathFromPlaylist(playlist);
+                songsOnPlaylists.AddRange(songs);
+                logger.AppendLine($"collecting tracks from {playlist}, {songs.Count()} tracks found");
             }
 
-            var songsToDelete = songsOnPlaylists.Distinct()
-                                                .Where(p=>p.Contains(tempFolder))                                    
-                                                .Intersect(tempSongs);
+            var tempSongsOnPlaylists = songsOnPlaylists.Distinct().Where(p => p.Contains(tempFolder));
+            var songsToDelete = tempSongs.Except(tempSongsOnPlaylists);
 
+            logger.AppendLine($"{songsToDelete.Count()} tracks to delete found");
             foreach (var toDelete in songsToDelete)
             {
+                logger.AppendLine($"deleting: {toDelete}");
                 File.Delete(toDelete);
             }
+            logger.AppendLine("end clearup");
         }
 
         private static IEnumerable<string> GetSongPathFromPlaylist(string playlistPath)
         {
             foreach (var line in File.ReadAllLines(playlistPath).Skip(1))
             {
-                if (!line.Contains("#EXTINF"))
+                if (!line.Contains("#EXT"))
                     yield return line;
             }
-            
         }
 
         private void AppendTrack(string plPath, Song song, out bool extracted)
