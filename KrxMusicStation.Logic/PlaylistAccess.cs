@@ -16,16 +16,20 @@ namespace KrxMusicStation.Logic
     {
         private readonly IConfiguration config;
         private readonly KrxMusicStationDBContext dbContext;
+        private readonly ISimpleLogger logger;
 
         public PlaylistAccess(IConfiguration config, 
-                                KrxMusicStationDBContext dbContext)
+                                KrxMusicStationDBContext dbContext,
+                                ISimpleLogger logger)
         {
             this.config = config;
             this.dbContext = dbContext;
+            this.logger = logger;
         }
 
         public bool SavePlaylist(string playlistName, IList<Song> songs, out string resultMessage)
         {
+            logger.AppendLine($"begin saving playlist {playlistName}");
             resultMessage = "Playlist saved";
             string targetPath = config["PlayListsFolder"] + playlistName + ".m3u";
             File.WriteAllText(targetPath, "#EXTCPlayListM3U::M3U" + Environment.NewLine, Encoding.UTF8);
@@ -72,7 +76,7 @@ namespace KrxMusicStation.Logic
 
             foreach (var playlist in playlists)
             {
-                var songs = GetSongPathFromPlaylist(playlist);
+                var songs = GetSongPathsFromPlaylist(playlist);
                 songsOnPlaylists.AddRange(songs);
                 logger.AppendLine($"collecting tracks from {playlist}, {songs.Count()} tracks found");
             }
@@ -89,7 +93,7 @@ namespace KrxMusicStation.Logic
             logger.AppendLine("end clearup");
         }
 
-        private static IEnumerable<string> GetSongPathFromPlaylist(string playlistPath)
+        private static IEnumerable<string> GetSongPathsFromPlaylist(string playlistPath)
         {
             foreach (var line in File.ReadAllLines(playlistPath).Skip(1))
             {
@@ -101,6 +105,7 @@ namespace KrxMusicStation.Logic
         private void AppendTrack(string plPath, Song song, out bool extracted)
         {
             string shortenedInfo = GetShortenedInfo(song);
+            logger.AppendLine($"Appending {shortenedInfo}");
             string path = GetSongFullPath(song);
             extracted = false;
 
@@ -122,6 +127,7 @@ namespace KrxMusicStation.Logic
         /// </summary>
         private void ExtractTrack(Song song, ref string sourcePath)
         {
+            logger.AppendLine($"extracting from full album {sourcePath}");
             //production env is on linux, dev on windows but without the music library, skip for dev
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 return;
