@@ -33,6 +33,7 @@ namespace KrxMusicStation
                 .AddEntityFrameworkStores<UsersDbContext>();
 
             services.AddScoped<IPlaylistService, PlaylistAccess>();
+            services.AddSingleton<ISimpleLogger, SimpleLogger>();
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
